@@ -678,7 +678,7 @@ async function initializeRoom() {
       const meta = document.createElement("div");
       meta.className = "qna-message-meta";
       const author = document.createElement("span");
-      if (message.sender === "ai") {
+      if (message.sender === "ai" || (message.sender === "owner" && !ownerView)) {
         author.className = "qna-message-author";
         const avatar = document.createElement("img");
         avatar.className = "qna-avatar qna-avatar-small";
