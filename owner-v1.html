@@ -784,7 +784,6 @@ async function initializeRoom() {
       }
     });
 
-    loginButton?.addEventListener("click", () => { loginButton.disabled = true; });
     loginForm?.addEventListener("submit", async (event) => {
       if (!ownerView) return;
       event.preventDefault();
@@ -793,8 +792,17 @@ async function initializeRoom() {
       try {
         await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
         loginPassword.value = "";
-      } catch {
-        statusLine.textContent = "Those owner sign-in details did not work. Check them and try again.";
+      } catch (error) {
+        const code = error?.code || "";
+        if (code === "auth/operation-not-allowed") {
+          statusLine.textContent = "Email/Password sign-in is not enabled in Firebase Authentication.";
+        } else if (code === "auth/unauthorized-domain") {
+          statusLine.textContent = "Add this website domain to Firebase Authentication’s authorized domains.";
+        } else if (code === "auth/network-request-failed") {
+          statusLine.textContent = "Network error. Check your connection and try again.";
+        } else {
+          statusLine.textContent = "Sign-in failed. Check that the owner account exists in this Firebase project and the email/password are correct.";
+        }
       } finally {
         loginButton.disabled = false;
       }
